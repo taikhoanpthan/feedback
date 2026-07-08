@@ -1,9 +1,5 @@
 import { Button, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const FeedbackTable = ({
@@ -25,13 +21,17 @@ const FeedbackTable = ({
     {
       title: "Ngày",
       dataIndex: "dateTime",
-      key: "dateTime",
-      width: 180,
-      render: (date) => (
-        <span>{dayjs(date).format("DD/MM/YYYY HH:mm")}</span>
+      render: (_, record) => (
+        <div>
+          <div>{dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}</div>
+
+          {record.updatedAt && (
+            <div className="text-xs text-gray-500">
+              Cập nhật: {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+            </div>
+          )}
+        </div>
       ),
-      sorter: (a, b) => new Date(a.dateTime) - new Date(b.dateTime),
-      defaultSortOrder: "descend",
     },
 
     {
@@ -40,9 +40,7 @@ const FeedbackTable = ({
       key: "tableNumber",
       width: 120,
       align: "center",
-      render: (tableNumber) => (
-        <Tag color="blue">Bàn {tableNumber}</Tag>
-      ),
+      render: (tableNumber) => <Tag color="blue">Bàn {tableNumber}</Tag>,
     },
 
     {

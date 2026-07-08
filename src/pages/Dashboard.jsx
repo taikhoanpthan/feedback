@@ -35,7 +35,7 @@ const Dashboard = () => {
       const data = await getAllFeedback();
 
       data.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
-
+  
       setFeedbacks(data);
     } catch (error) {
       console.error(error);

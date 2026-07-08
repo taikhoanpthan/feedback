@@ -2,39 +2,41 @@ import { useState } from "react";
 import { Modal, message } from "antd";
 import FeedbackForm from "./FeedbackForm";
 
-import {
-  createFeedback,
-  updateFeedback,
-} from "../services/feedbackService";
+import { createFeedback, updateFeedback } from "../services/feedbackService";
 
-const FeedbackModal = ({
-  open,
-  onClose,
-  onSuccess,
-  editingFeedback,
-}) => {
+const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
 
-      const data = {
-        tableNumber: values.tableNumber,
-        meal: values.meal,
-        feedback: values.feedback,
-        dateTime: new Date().toISOString(),
-      };
+      let data;
 
       if (editingFeedback) {
-        // Chế độ chỉnh sửa
+        data = {
+          tableNumber: values.tableNumber,
+          meal: values.meal,
+          feedback: values.feedback,
+          dateTime: editingFeedback.dateTime, // giữ nguyên ngày tạo
+          updatedAt: new Date().toISOString(), // ngày cập nhật
+        };
+
         await updateFeedback(editingFeedback.id, data);
         message.success("Cập nhật feedback thành công!");
       } else {
-        // Chế độ thêm mới
+        data = {
+          tableNumber: values.tableNumber,
+          meal: values.meal,
+          feedback: values.feedback,
+          dateTime: new Date().toISOString(),
+          updatedAt: null,
+        };
+
         await createFeedback(data);
         message.success("Thêm feedback thành công!");
       }
+
 
       // Load lại danh sách
       await onSuccess();
