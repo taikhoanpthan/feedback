@@ -42,7 +42,7 @@ const Navbar = () => {
         {/* Right */}
         <div className="flex items-center gap-2 md:gap-3">
           {/* Reload */}
-          <Tooltip title="Tải lại dữ liệu">
+          <Tooltip>
             <Button
               type="text"
               shape="circle"
