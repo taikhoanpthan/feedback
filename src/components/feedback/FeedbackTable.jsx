@@ -141,7 +141,7 @@ const FeedbackTable = ({
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm mt-6">
+    <div className="bg-white rounded-xl shadow-sm mt-6 mb-12">
       <Table
         columns={columns}
         dataSource={data}
