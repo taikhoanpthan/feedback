@@ -19,26 +19,25 @@ const FeedbackTable = ({
     },
 
     {
-  title: "Ngày",
-  dataIndex: "dateTime",
-  width: 220,
-  render: (_, record) => (
-    <div>
-      <div>
-        <strong>Tạo:</strong>{" "}
-        {dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}
-      </div>
-
-      {record.updatedAt &&
-        record.updatedAt !== record.dateTime && (
-          <div className="text-xs text-gray-500 mt-1">
-            <strong>Cập nhật:</strong>{" "}
-            {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+      title: "Ngày",
+      dataIndex: "dateTime",
+      width: 220,
+      render: (_, record) => (
+        <div>
+          <div>
+            <strong>Tạo:</strong>{" "}
+            {dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}
           </div>
-        )}
-    </div>
-  ),
-},
+
+          {record.updatedAt && record.updatedAt !== record.dateTime && (
+            <div className="text-xs text-gray-500 mt-1">
+              <strong>Cập nhật:</strong>{" "}
+              {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+            </div>
+          )}
+        </div>
+      ),
+    },
 
     {
       title: "Khách hàng",
@@ -61,10 +60,25 @@ const FeedbackTable = ({
     {
       title: "Số bàn",
       dataIndex: "tableNumber",
-      key: "tableNumber",
-      width: 120,
+      width: 150,
       align: "center",
-      render: (tableNumber) => <Tag color="blue">Bàn {tableNumber}</Tag>,
+      render: (tableNumber) => (
+        <div
+          className="
+        inline-block
+        rounded-full
+        bg-blue-50
+        text-blue-600
+        border border-blue-200
+        px-3 py-1
+        whitespace-normal
+        break-words
+        max-w-full
+      "
+        >
+          {tableNumber}
+        </div>
+      ),
     },
 
     {
