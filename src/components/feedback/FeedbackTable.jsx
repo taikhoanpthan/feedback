@@ -19,21 +19,26 @@ const FeedbackTable = ({
     },
 
     {
-      title: "Ngày",
-      dataIndex: "dateTime",
-      width: 180,
-      render: (_, record) => (
-        <div>
-          <div>{dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}</div>
+  title: "Ngày",
+  dataIndex: "dateTime",
+  width: 220,
+  render: (_, record) => (
+    <div>
+      <div>
+        <strong>Tạo:</strong>{" "}
+        {dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}
+      </div>
 
-          {record.updatedAt && (
-            <div className="text-xs text-gray-500">
-              Cập nhật: {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
-            </div>
-          )}
-        </div>
-      ),
-    },
+      {record.updatedAt &&
+        record.updatedAt !== record.dateTime && (
+          <div className="text-xs text-gray-500 mt-1">
+            <strong>Cập nhật:</strong>{" "}
+            {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+          </div>
+        )}
+    </div>
+  ),
+},
 
     {
       title: "Khách hàng",

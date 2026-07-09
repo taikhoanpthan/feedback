@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 
-const END_POINT = "/feedback";
+const END_POINT = "/backfeed";
 
 // Lấy tất cả feedback
 export const getAllFeedback = async () => {
@@ -19,8 +19,8 @@ export const createFeedback = async (feedbackData) => {
   try {
     const { data } = await axiosClient.post(END_POINT, {
       ...feedbackData,
-      dateTime:
-        feedbackData.dateTime || new Date().toISOString(),
+      dateTime: feedbackData.dateTime ?? new Date().toISOString(),
+      updatedAt: null,
     });
 
     return data;
@@ -32,14 +32,19 @@ export const createFeedback = async (feedbackData) => {
 
 // Cập nhật feedback
 export const updateFeedback = async (id, feedbackData) => {
-  const { data } = await axiosClient.put(`${END_POINT}/${id}`, {
+  const payload = {
     ...feedbackData,
     updatedAt: new Date().toISOString(),
-  });
+  };
+
+  console.log("UPDATE PAYLOAD:", payload);
+
+  const { data } = await axiosClient.put(`${END_POINT}/${id}`, payload);
+
+  console.log("UPDATE RESPONSE:", data);
 
   return data;
 };
-
 // Xóa feedback
 export const deleteFeedback = async (id) => {
   const { data } = await axiosClient.delete(`${END_POINT}/${id}`);

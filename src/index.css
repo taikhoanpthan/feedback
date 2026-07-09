@@ -9,3 +9,16 @@ body,
   padding: 0;
   background: #f5f7fa;
 }
+
+/* Ngăn iPhone tự zoom khi focus input */
+.ant-input,
+.ant-input-affix-wrapper input,
+.ant-picker input,
+.ant-select-selection-search-input,
+.ant-select-selector,
+.ant-input-number-input,
+.ant-input-textarea textarea,
+textarea,
+input {
+  font-size: 16px !important;
+}

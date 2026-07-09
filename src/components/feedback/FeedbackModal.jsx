@@ -2,17 +2,9 @@ import { useState } from "react";
 import { Modal, message } from "antd";
 import FeedbackForm from "./FeedbackForm";
 
-import {
-  createFeedback,
-  updateFeedback,
-} from "../services/feedbackService";
+import { createFeedback, updateFeedback } from "../services/feedbackService";
 
-const FeedbackModal = ({
-  open,
-  onClose,
-  onSuccess,
-  editingFeedback,
-}) => {
+const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
@@ -24,24 +16,24 @@ const FeedbackModal = ({
           ...editingFeedback,
           ...values,
 
-          // Nếu VIP đổi ngày thì lấy ngày mới,
+          // Nếu VIP chọn ngày mới thì dùng ngày đó,
           // nếu không thì giữ nguyên ngày cũ.
-          dateTime:
-            values.dateTime || editingFeedback.dateTime,
+          dateTime: values.dateTime
+            ? values.dateTime.toISOString()
+            : editingFeedback.dateTime,
 
           updatedAt: new Date().toISOString(),
         });
-
         message.success("Cập nhật feedback thành công!");
       } else {
         await createFeedback({
           ...values,
 
-          // VIP có chọn ngày thì dùng ngày đó,
-          // không thì lấy ngày hiện tại.
+          // Ngày tạo
           dateTime:
-            values.dateTime || new Date().toISOString(),
+            values.dateTime?.toISOString?.() || new Date().toISOString(),
 
+          // Chưa cập nhật lần nào
           updatedAt: null,
         });
 
@@ -49,11 +41,9 @@ const FeedbackModal = ({
       }
 
       await onSuccess();
-
       onClose();
     } catch (error) {
       console.error(error);
-
       message.error("Có lỗi xảy ra!");
     } finally {
       setLoading(false);
@@ -68,11 +58,7 @@ const FeedbackModal = ({
       centered
       destroyOnClose
       width={650}
-      title={
-        editingFeedback
-          ? "Chỉnh sửa Feedback"
-          : "Thêm Feedback"
-      }
+      title={editingFeedback ? "Chỉnh sửa Feedback" : "Thêm Feedback"}
     >
       <FeedbackForm
         onFinish={handleSubmit}

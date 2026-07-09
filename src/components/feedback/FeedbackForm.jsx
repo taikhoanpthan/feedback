@@ -1,23 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  Divider,
-  Form,
-  Input,
-  Space,
-  Tag,
-} from "antd";
+import { Button, DatePicker, Divider, Form, Input, Space, Tag } from "antd";
 import dayjs from "dayjs";
 import feedbackTags from "../../assets/feedbackTags";
 
 const { TextArea } = Input;
 
-const FeedbackForm = ({
-  onFinish,
-  initialValues = null,
-  loading = false,
-}) => {
+const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
   const [form] = Form.useForm();
 
   const [showAllTags, setShowAllTags] = useState(false);
@@ -25,9 +13,7 @@ const FeedbackForm = ({
 
   const isEdit = !!initialValues;
 
-  const visibleTags = showAllTags
-    ? feedbackTags
-    : feedbackTags.slice(0, 6);
+  const visibleTags = showAllTags ? feedbackTags : feedbackTags.slice(0, 6);
 
   useEffect(() => {
     if (isEdit) {
@@ -37,9 +23,7 @@ const FeedbackForm = ({
         tableNumber: initialValues.tableNumber,
         meal: initialValues.meal,
         feedback: initialValues.feedback,
-        dateTime: initialValues.dateTime
-          ? dayjs(initialValues.dateTime)
-          : null,
+        dateTime: initialValues.dateTime ? dayjs(initialValues.dateTime) : null,
       });
     } else {
       form.resetFields();
@@ -78,10 +62,14 @@ const FeedbackForm = ({
     const submitData = {
       ...values,
       customerPhone: values.customerPhone?.trim() || "",
-      dateTime: values.dateTime
-        ? values.dateTime.toISOString()
-        : new Date().toISOString(),
     };
+
+    // Chỉ khi tạo mới mới gán ngày feedback
+    if (!isEdit) {
+      submitData.dateTime = values.dateTime
+        ? values.dateTime.toISOString()
+        : new Date().toISOString();
+    }
 
     await onFinish(submitData);
 
@@ -93,7 +81,6 @@ const FeedbackForm = ({
       setShowAllTags(false);
     }
   };
-
   return (
     <Form
       form={form}
@@ -103,18 +90,10 @@ const FeedbackForm = ({
     >
       {isEdit && (
         <>
-          <Divider orientation="left">
-            Thông tin khách hàng
-          </Divider>
+          <Divider orientation="left">Thông tin khách hàng</Divider>
 
-          <Form.Item
-            label="Tên khách hàng"
-            name="customerName"
-          >
-            <Input
-              autoFocus={false}
-              placeholder="Ví dụ: Nguyễn Văn A"
-            />
+          <Form.Item label="Tên khách hàng" name="customerName">
+            <Input autoFocus={false} placeholder="Ví dụ: Nguyễn Văn A" />
           </Form.Item>
 
           <Form.Item
@@ -128,17 +107,14 @@ const FeedbackForm = ({
                     return Promise.resolve();
                   }
 
-                  const regex =
-                    /^(0|\+84)[0-9]{9,10}$/;
+                  const regex = /^(0|\+84)[0-9]{9,10}$/;
 
                   if (regex.test(value.trim())) {
                     return Promise.resolve();
                   }
 
                   return Promise.reject(
-                    new Error(
-                      "Số điện thoại không hợp lệ!"
-                    )
+                    new Error("Số điện thoại không hợp lệ!"),
                   );
                 },
               },
@@ -154,9 +130,7 @@ const FeedbackForm = ({
         </>
       )}
 
-      <Divider orientation="left">
-        Thông tin Feedback
-      </Divider>
+      <Divider orientation="left">Thông tin Feedback</Divider>
 
       <Form.Item
         label="Số bàn"
@@ -168,10 +142,7 @@ const FeedbackForm = ({
           },
         ]}
       >
-        <Input
-          autoFocus={false}
-          placeholder="Ví dụ: C10, VIP01..."
-        />
+        <Input autoFocus={false} placeholder="Ví dụ: C10, VIP01..." />
       </Form.Item>
 
       <Form.Item
@@ -229,15 +200,11 @@ const FeedbackForm = ({
               <Tag
                 color="default"
                 className="cursor-pointer rounded-full px-3 py-1 font-medium"
-                onClick={() =>
-                  setShowAllTags(!showAllTags)
-                }
+                onClick={() => setShowAllTags(!showAllTags)}
               >
                 {showAllTags
                   ? "Thu gọn ▲"
-                  : `Xem thêm (${
-                      feedbackTags.length - 6
-                    }) ▼`}
+                  : `Xem thêm (${feedbackTags.length - 6}) ▼`}
               </Tag>
             )}
           </Space>
@@ -270,9 +237,7 @@ const FeedbackForm = ({
         size="large"
         loading={loading}
       >
-        {isEdit
-          ? "Cập nhật Feedback"
-          : "Lưu Feedback"}
+        {isEdit ? "Cập nhật Feedback" : "Lưu Feedback"}
       </Button>
     </Form>
   );
