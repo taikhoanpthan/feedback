@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard";
+import Commission from "../components/customs/troll";
 
 const AppRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const AppRoutes = () => {
 
         {/* Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/troll" element={<Commission />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,25 +1,53 @@
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Tag, Space, Divider } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Space,
+  Tag,
+} from "antd";
+import dayjs from "dayjs";
 import feedbackTags from "../../assets/feedbackTags";
 
 const { TextArea } = Input;
 
-const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
+const FeedbackForm = ({
+  onFinish,
+  initialValues = null,
+  loading = false,
+}) => {
   const [form] = Form.useForm();
-  const [showAllTags, setShowAllTags] = useState(false);
 
-  const visibleTags = showAllTags ? feedbackTags : feedbackTags.slice(0, 6);
+  const [showAllTags, setShowAllTags] = useState(false);
+  const [isVip, setIsVip] = useState(false);
+
+  const isEdit = !!initialValues;
+
+  const visibleTags = showAllTags
+    ? feedbackTags
+    : feedbackTags.slice(0, 6);
+
   useEffect(() => {
-    if (initialValues) {
+    if (isEdit) {
       form.setFieldsValue({
+        customerName: initialValues.customerName || "",
+        customerPhone: initialValues.customerPhone || "",
         tableNumber: initialValues.tableNumber,
         meal: initialValues.meal,
         feedback: initialValues.feedback,
+        dateTime: initialValues.dateTime
+          ? dayjs(initialValues.dateTime)
+          : null,
       });
     } else {
       form.resetFields();
     }
-  }, [initialValues, form]);
+
+    // Mở khóa VIP sau khi "chuyển khoản"
+    setIsVip(sessionStorage.getItem("vipFeedback") === "true");
+  }, [form, initialValues, isEdit]);
 
   const handleTagClick = (tag) => {
     const current = form.getFieldValue("feedback") || "";
@@ -37,10 +65,22 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
   };
 
   const handleFinish = async (values) => {
-    await onFinish(values);
+    const submitData = {
+      ...values,
+      dateTime: values.dateTime
+        ? values.dateTime.toISOString()
+        : new Date().toISOString(),
+    };
 
-    if (!initialValues) {
+    await onFinish(submitData);
+
+    // Sau khi lưu thì khóa VIP lại
+    sessionStorage.removeItem("vipFeedback");
+    setIsVip(false);
+
+    if (!isEdit) {
       form.resetFields();
+      setShowAllTags(false);
     }
   };
 
@@ -48,9 +88,45 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
     <Form
       form={form}
       layout="vertical"
-      onFinish={handleFinish}
       autoComplete="off"
+      onFinish={handleFinish}
     >
+      {/* Chỉ hiện khi chỉnh sửa */}
+      {isEdit && (
+        <>
+          <Divider orientation="left">
+            Thông tin khách hàng
+          </Divider>
+
+          <Form.Item
+            label="Tên khách hàng"
+            name="customerName"
+          >
+            <Input placeholder="Ví dụ: Nguyễn Văn A" />
+          </Form.Item>
+
+          <Form.Item
+            label="Số điện thoại"
+            name="customerPhone"
+            rules={[
+              {
+                pattern: /^(0|\+84)[0-9]{9,10}$/,
+                message: "Số điện thoại không hợp lệ!",
+              },
+            ]}
+          >
+            <Input
+              placeholder="Ví dụ: 0901234567"
+              maxLength={11}
+            />
+          </Form.Item>
+        </>
+      )}
+
+      <Divider orientation="left">
+        Thông tin Feedback
+      </Divider>
+
       <Form.Item
         label="Số bàn"
         name="tableNumber"
@@ -61,7 +137,7 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
           },
         ]}
       >
-        <Input placeholder="Ví dụ: T1, T2, VIP01..." />
+        <Input placeholder="Ví dụ: C10, VIP01..." />
       </Form.Item>
 
       <Form.Item
@@ -77,34 +153,63 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
         <Input placeholder="Ví dụ: Buffet Standard, Alacarte..." />
       </Form.Item>
 
-      <Divider orientation="left">Chọn nhanh Feedback</Divider>
+      {/* Chỉ VIP mới được chọn ngày */}
+      {isVip && (
+        <Form.Item
+          label="📅 Ngày Feedback (VIP)"
+          name="dateTime"
+          extra="Nếu không chọn sẽ dùng ngày hiện tại."
+        >
+          <DatePicker
+            className="w-full"
+            format="DD/MM/YYYY"
+            placeholder="Chọn ngày"
+            disabledDate={(current) =>
+              current && current > dayjs().endOf("day")
+            }
+          />
+        </Form.Item>
+      )}
 
-      <div className="mb-5">
-        <Space wrap size={[8, 10]}>
-          {visibleTags.map((tag) => (
-            <Tag
-              key={tag}
-              color="processing"
-              className="cursor-pointer select-none rounded-full px-3 py-1 text-sm transition-all hover:scale-105 hover:shadow"
-              onClick={() => handleTagClick(tag)}
-            >
-              {tag}
-            </Tag>
-          ))}
+      {/* Chỉ VIP mới hiện Tag */}
+      {isVip && (
+        <>
+          
 
-          {feedbackTags.length > 6 && (
-            <Tag
-              color="default"
-              className="cursor-pointer rounded-full px-3 py-1 font-medium"
-              onClick={() => setShowAllTags(!showAllTags)}
-            >
-              {showAllTags
-                ? "Thu gọn ▲"
-                : `Xem thêm (${feedbackTags.length - 6}) ▼`}
-            </Tag>
-          )}
-        </Space>
-      </div>
+          <div className="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+            <p className="mb-3 text-sm font-medium text-yellow-700">
+              ✨ Tính năng VIP đã được mở khóa
+            </p>
+
+            <Space wrap size={[8, 10]}>
+              {visibleTags.map((tag) => (
+                <Tag
+                  key={tag}
+                  color="processing"
+                  className="cursor-pointer select-none rounded-full px-3 py-1 text-sm transition-all hover:scale-105 hover:shadow"
+                  onClick={() => handleTagClick(tag)}
+                >
+                  {tag}
+                </Tag>
+              ))}
+
+              {feedbackTags.length > 6 && (
+                <Tag
+                  color="default"
+                  className="cursor-pointer rounded-full px-3 py-1 font-medium"
+                  onClick={() =>
+                    setShowAllTags(!showAllTags)
+                  }
+                >
+                  {showAllTags
+                    ? "Thu gọn ▲"
+                    : `Xem thêm (${feedbackTags.length - 6}) ▼`}
+                </Tag>
+              )}
+            </Space>
+          </div>
+        </>
+      )}
 
       <Form.Item
         label="Feedback"
@@ -131,7 +236,9 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
         size="large"
         loading={loading}
       >
-        {initialValues ? "Cập nhật Feedback" : "Lưu Feedback"}
+        {isEdit
+          ? "Cập nhật Feedback"
+          : "Lưu Feedback"}
       </Button>
     </Form>
   );

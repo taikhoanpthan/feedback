@@ -2,49 +2,58 @@ import { useState } from "react";
 import { Modal, message } from "antd";
 import FeedbackForm from "./FeedbackForm";
 
-import { createFeedback, updateFeedback } from "../services/feedbackService";
+import {
+  createFeedback,
+  updateFeedback,
+} from "../services/feedbackService";
 
-const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
+const FeedbackModal = ({
+  open,
+  onClose,
+  onSuccess,
+  editingFeedback,
+}) => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
 
-      let data;
-
       if (editingFeedback) {
-        data = {
-          tableNumber: values.tableNumber,
-          meal: values.meal,
-          feedback: values.feedback,
-          dateTime: editingFeedback.dateTime, // giữ nguyên ngày tạo
-          updatedAt: new Date().toISOString(), // ngày cập nhật
-        };
+        await updateFeedback(editingFeedback.id, {
+          ...editingFeedback,
+          ...values,
 
-        await updateFeedback(editingFeedback.id, data);
+          // Nếu VIP đổi ngày thì lấy ngày mới,
+          // nếu không thì giữ nguyên ngày cũ.
+          dateTime:
+            values.dateTime || editingFeedback.dateTime,
+
+          updatedAt: new Date().toISOString(),
+        });
+
         message.success("Cập nhật feedback thành công!");
       } else {
-        data = {
-          tableNumber: values.tableNumber,
-          meal: values.meal,
-          feedback: values.feedback,
-          dateTime: new Date().toISOString(),
-          updatedAt: null,
-        };
+        await createFeedback({
+          ...values,
 
-        await createFeedback(data);
+          // VIP có chọn ngày thì dùng ngày đó,
+          // không thì lấy ngày hiện tại.
+          dateTime:
+            values.dateTime || new Date().toISOString(),
+
+          updatedAt: null,
+        });
+
         message.success("Thêm feedback thành công!");
       }
 
-
-      // Load lại danh sách
       await onSuccess();
 
-      // Đóng modal
       onClose();
     } catch (error) {
       console.error(error);
+
       message.error("Có lỗi xảy ra!");
     } finally {
       setLoading(false);
@@ -57,9 +66,13 @@ const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
       onCancel={onClose}
       footer={null}
       centered
-      width={650}
       destroyOnClose
-      title={editingFeedback ? "Chỉnh sửa Feedback" : "Thêm Feedback"}
+      width={650}
+      title={
+        editingFeedback
+          ? "Chỉnh sửa Feedback"
+          : "Thêm Feedback"
+      }
     >
       <FeedbackForm
         onFinish={handleSubmit}

@@ -1,5 +1,9 @@
 import { Button, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const FeedbackTable = ({
@@ -21,16 +25,38 @@ const FeedbackTable = ({
     {
       title: "Ngày",
       dataIndex: "dateTime",
+      width: 180,
       render: (_, record) => (
         <div>
           <div>{dayjs(record.dateTime).format("DD/MM/YYYY HH:mm")}</div>
 
           {record.updatedAt && (
             <div className="text-xs text-gray-500">
-              Cập nhật: {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+              Cập nhật:{" "}
+              {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
             </div>
           )}
         </div>
+      ),
+    },
+
+    {
+      title: "Khách hàng",
+      dataIndex: "customerName",
+      key: "customerName",
+      width: 180,
+      render: (value) => value || (
+        <span className="text-gray-400 italic">Chưa có</span>
+      ),
+    },
+
+    {
+      title: "SĐT",
+      dataIndex: "customerPhone",
+      key: "customerPhone",
+      width: 150,
+      render: (value) => value || (
+        <span className="text-gray-400 italic">Chưa có</span>
       ),
     },
 
@@ -40,11 +66,13 @@ const FeedbackTable = ({
       key: "tableNumber",
       width: 120,
       align: "center",
-      render: (tableNumber) => <Tag color="blue">Bàn {tableNumber}</Tag>,
+      render: (tableNumber) => (
+        <Tag color="blue">Bàn {tableNumber}</Tag>
+      ),
     },
 
     {
-      title: "Ăn gì",
+      title: "Khách ăn gì",
       dataIndex: "meal",
       key: "meal",
       width: 180,
@@ -56,7 +84,7 @@ const FeedbackTable = ({
       key: "feedback",
       ellipsis: true,
       render: (text) => (
-        <Tooltip title={text}>
+        <Tooltip>
           <span>{text}</span>
         </Tooltip>
       ),
@@ -69,7 +97,7 @@ const FeedbackTable = ({
       align: "center",
       render: (_, record) => (
         <Space>
-          <Tooltip title="Xem chi tiết">
+          <Tooltip>
             <Button
               type="primary"
               ghost
@@ -78,7 +106,7 @@ const FeedbackTable = ({
             />
           </Tooltip>
 
-          <Tooltip title="Chỉnh sửa">
+          <Tooltip>
             <Button
               color="gold"
               variant="outlined"
@@ -88,14 +116,16 @@ const FeedbackTable = ({
           </Tooltip>
 
           <Popconfirm
-            title="Xóa Feedback"
             description="Bạn chắc chắn muốn xóa feedback này?"
             okText="Xóa"
             cancelText="Hủy"
             onConfirm={() => onDelete(record.id)}
           >
-            <Tooltip title="Xóa">
-              <Button danger icon={<DeleteOutlined />} />
+            <Tooltip >
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+              />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -116,7 +146,7 @@ const FeedbackTable = ({
           showSizeChanger: false,
           showTotal: (total) => `Tổng ${total} feedback`,
         }}
-        scroll={{ x: 1000 }}
+        scroll={{ x: 1400 }}
       />
     </div>
   );

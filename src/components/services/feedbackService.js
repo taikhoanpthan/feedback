@@ -11,26 +11,31 @@ export const getAllFeedback = async () => {
 // Lấy feedback theo id
 export const getFeedbackById = async (id) => {
   const { data } = await axiosClient.get(`${END_POINT}/${id}`);
-
   return data;
 };
 
+// Thêm feedback
 export const createFeedback = async (feedbackData) => {
   try {
-    const response = await axiosClient.post(END_POINT, {
+    const { data } = await axiosClient.post(END_POINT, {
       ...feedbackData,
-      dateTime: new Date().toISOString(),
+      dateTime:
+        feedbackData.dateTime || new Date().toISOString(),
     });
-    return response.data;
+
+    return data;
   } catch (error) {
     console.error("Lỗi khi tạo feedback:", error.response || error);
-    throw error; // Ném lỗi ra ngoài để UI nhận biết
+    throw error;
   }
 };
 
 // Cập nhật feedback
 export const updateFeedback = async (id, feedbackData) => {
-  const { data } = await axiosClient.put(`${END_POINT}/${id}`, feedbackData);
+  const { data } = await axiosClient.put(`${END_POINT}/${id}`, {
+    ...feedbackData,
+    updatedAt: new Date().toISOString(),
+  });
 
   return data;
 };
@@ -38,6 +43,5 @@ export const updateFeedback = async (id, feedbackData) => {
 // Xóa feedback
 export const deleteFeedback = async (id) => {
   const { data } = await axiosClient.delete(`${END_POINT}/${id}`);
-
   return data;
 };
