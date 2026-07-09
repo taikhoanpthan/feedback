@@ -49,7 +49,7 @@ const Navbar = () => {
 
         {/* Right */}
         <div className="flex items-center gap-3">
-          <Tooltip title="Làm mới">
+          <Tooltip>
             <Button
               type="text"
               shape="circle"

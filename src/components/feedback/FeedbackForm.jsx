@@ -47,6 +47,16 @@ const FeedbackForm = ({
 
     // Mở khóa VIP sau khi "chuyển khoản"
     setIsVip(sessionStorage.getItem("vipFeedback") === "true");
+
+    // Không auto focus vào input khi mở form
+    setTimeout(() => {
+      if (
+        document.activeElement &&
+        typeof document.activeElement.blur === "function"
+      ) {
+        document.activeElement.blur();
+      }
+    }, 50);
   }, [form, initialValues, isEdit]);
 
   const handleTagClick = (tag) => {
@@ -67,6 +77,7 @@ const FeedbackForm = ({
   const handleFinish = async (values) => {
     const submitData = {
       ...values,
+      customerPhone: values.customerPhone?.trim() || "",
       dateTime: values.dateTime
         ? values.dateTime.toISOString()
         : new Date().toISOString(),
@@ -74,7 +85,6 @@ const FeedbackForm = ({
 
     await onFinish(submitData);
 
-    // Sau khi lưu thì khóa VIP lại
     sessionStorage.removeItem("vipFeedback");
     setIsVip(false);
 
@@ -91,7 +101,6 @@ const FeedbackForm = ({
       autoComplete="off"
       onFinish={handleFinish}
     >
-      {/* Chỉ hiện khi chỉnh sửa */}
       {isEdit && (
         <>
           <Divider orientation="left">
@@ -102,22 +111,44 @@ const FeedbackForm = ({
             label="Tên khách hàng"
             name="customerName"
           >
-            <Input placeholder="Ví dụ: Nguyễn Văn A" />
+            <Input
+              autoFocus={false}
+              placeholder="Ví dụ: Nguyễn Văn A"
+            />
           </Form.Item>
 
           <Form.Item
             label="Số điện thoại"
             name="customerPhone"
+            extra="Không bắt buộc. Chỉ nhập nếu khách hàng cung cấp."
             rules={[
               {
-                pattern: /^(0|\+84)[0-9]{9,10}$/,
-                message: "Số điện thoại không hợp lệ!",
+                validator(_, value) {
+                  if (!value || value.trim() === "") {
+                    return Promise.resolve();
+                  }
+
+                  const regex =
+                    /^(0|\+84)[0-9]{9,10}$/;
+
+                  if (regex.test(value.trim())) {
+                    return Promise.resolve();
+                  }
+
+                  return Promise.reject(
+                    new Error(
+                      "Số điện thoại không hợp lệ!"
+                    )
+                  );
+                },
               },
             ]}
           >
             <Input
-              placeholder="Ví dụ: 0901234567"
-              maxLength={11}
+              autoFocus={false}
+              placeholder="Để trống nếu không có"
+              maxLength={12}
+              allowClear
             />
           </Form.Item>
         </>
@@ -137,7 +168,10 @@ const FeedbackForm = ({
           },
         ]}
       >
-        <Input placeholder="Ví dụ: C10, VIP01..." />
+        <Input
+          autoFocus={false}
+          placeholder="Ví dụ: C10, VIP01..."
+        />
       </Form.Item>
 
       <Form.Item
@@ -150,10 +184,12 @@ const FeedbackForm = ({
           },
         ]}
       >
-        <Input placeholder="Ví dụ: Buffet Standard, Alacarte..." />
+        <Input
+          autoFocus={false}
+          placeholder="Ví dụ: Buffet Standard, Alacarte..."
+        />
       </Form.Item>
 
-      {/* Chỉ VIP mới được chọn ngày */}
       {isVip && (
         <Form.Item
           label="📅 Ngày Feedback (VIP)"
@@ -171,44 +207,41 @@ const FeedbackForm = ({
         </Form.Item>
       )}
 
-      {/* Chỉ VIP mới hiện Tag */}
       {isVip && (
-        <>
-          
+        <div className="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+          <p className="mb-3 text-sm font-medium text-yellow-700">
+            ✨ Tính năng VIP đã được mở khóa
+          </p>
 
-          <div className="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4">
-            <p className="mb-3 text-sm font-medium text-yellow-700">
-              ✨ Tính năng VIP đã được mở khóa
-            </p>
+          <Space wrap size={[8, 10]}>
+            {visibleTags.map((tag) => (
+              <Tag
+                key={tag}
+                color="processing"
+                className="cursor-pointer select-none rounded-full px-3 py-1 text-sm transition-all hover:scale-105 hover:shadow"
+                onClick={() => handleTagClick(tag)}
+              >
+                {tag}
+              </Tag>
+            ))}
 
-            <Space wrap size={[8, 10]}>
-              {visibleTags.map((tag) => (
-                <Tag
-                  key={tag}
-                  color="processing"
-                  className="cursor-pointer select-none rounded-full px-3 py-1 text-sm transition-all hover:scale-105 hover:shadow"
-                  onClick={() => handleTagClick(tag)}
-                >
-                  {tag}
-                </Tag>
-              ))}
-
-              {feedbackTags.length > 6 && (
-                <Tag
-                  color="default"
-                  className="cursor-pointer rounded-full px-3 py-1 font-medium"
-                  onClick={() =>
-                    setShowAllTags(!showAllTags)
-                  }
-                >
-                  {showAllTags
-                    ? "Thu gọn ▲"
-                    : `Xem thêm (${feedbackTags.length - 6}) ▼`}
-                </Tag>
-              )}
-            </Space>
-          </div>
-        </>
+            {feedbackTags.length > 6 && (
+              <Tag
+                color="default"
+                className="cursor-pointer rounded-full px-3 py-1 font-medium"
+                onClick={() =>
+                  setShowAllTags(!showAllTags)
+                }
+              >
+                {showAllTags
+                  ? "Thu gọn ▲"
+                  : `Xem thêm (${
+                      feedbackTags.length - 6
+                    }) ▼`}
+              </Tag>
+            )}
+          </Space>
+        </div>
       )}
 
       <Form.Item
@@ -222,6 +255,7 @@ const FeedbackForm = ({
         ]}
       >
         <TextArea
+          autoFocus={false}
           rows={5}
           maxLength={500}
           showCount

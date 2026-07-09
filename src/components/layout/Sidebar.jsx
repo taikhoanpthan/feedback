@@ -17,6 +17,8 @@ const Sidebar = () => {
       className="min-h-screen shadow-md"
       style={{
         background: "#001529",
+        paddingTop: "12px",
+
       }}
     >
       {/* Logo */}

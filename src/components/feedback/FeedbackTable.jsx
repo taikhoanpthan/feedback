@@ -1,9 +1,5 @@
 import { Button, Popconfirm, Space, Table, Tag, Tooltip } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const FeedbackTable = ({
@@ -32,8 +28,7 @@ const FeedbackTable = ({
 
           {record.updatedAt && (
             <div className="text-xs text-gray-500">
-              Cập nhật:{" "}
-              {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
+              Cập nhật: {dayjs(record.updatedAt).format("DD/MM/YYYY HH:mm")}
             </div>
           )}
         </div>
@@ -45,9 +40,8 @@ const FeedbackTable = ({
       dataIndex: "customerName",
       key: "customerName",
       width: 180,
-      render: (value) => value || (
-        <span className="text-gray-400 italic">Chưa có</span>
-      ),
+      render: (value) =>
+        value || <span className="text-gray-400 italic">Chưa có</span>,
     },
 
     {
@@ -55,9 +49,8 @@ const FeedbackTable = ({
       dataIndex: "customerPhone",
       key: "customerPhone",
       width: 150,
-      render: (value) => value || (
-        <span className="text-gray-400 italic">Chưa có</span>
-      ),
+      render: (value) =>
+        value || <span className="text-gray-400 italic">Chưa có</span>,
     },
 
     {
@@ -66,9 +59,7 @@ const FeedbackTable = ({
       key: "tableNumber",
       width: 120,
       align: "center",
-      render: (tableNumber) => (
-        <Tag color="blue">Bàn {tableNumber}</Tag>
-      ),
+      render: (tableNumber) => <Tag color="blue">Bàn {tableNumber}</Tag>,
     },
 
     {
@@ -121,11 +112,8 @@ const FeedbackTable = ({
             cancelText="Hủy"
             onConfirm={() => onDelete(record.id)}
           >
-            <Tooltip >
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-              />
+            <Tooltip>
+              <Button danger icon={<DeleteOutlined />} />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -141,12 +129,15 @@ const FeedbackTable = ({
         loading={loading}
         rowKey="id"
         bordered
+        scroll={{
+          x: 1400,
+          scrollToFirstRowOnChange: false,
+        }}
         pagination={{
           pageSize: 8,
           showSizeChanger: false,
           showTotal: (total) => `Tổng ${total} feedback`,
         }}
-        scroll={{ x: 1400 }}
       />
     </div>
   );

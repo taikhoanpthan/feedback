@@ -256,7 +256,7 @@ const Dashboard = () => {
           <Content
             className="bg-slate-100 p-4 md:p-6 pb-24 lg:pb-6"
             style={{
-              paddingTop: "calc(64px + env(safe-area-inset-top) + 16px)",
+              paddingTop: "calc(64px + env(safe-area-inset-top) + 40px)",
             }}
           >
             <FilterBar
