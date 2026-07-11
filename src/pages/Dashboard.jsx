@@ -245,16 +245,16 @@ const Dashboard = () => {
   return (
     <>
       <Layout className="min-h-screen">
-        {/* Sidebar chỉ hiện trên desktop */}
-        <div className="hidden lg:block">
+        {/* Sidebar: Tablet + Desktop */}
+        <div className="hidden md:block">
           <Sidebar />
         </div>
 
-        <Layout>
+        <Layout className="min-w-0">
           <Navbar />
 
           <Content
-            className="bg-slate-100 p-4 md:p-6 pb-24 lg:pb-6"
+            className="bg-slate-100 p-4 md:p-6 pb-24 md:pb-6 overflow-x-auto"
             style={{
               paddingTop: "calc(64px + env(safe-area-inset-top) + 40px)",
             }}
@@ -292,8 +292,8 @@ const Dashboard = () => {
         </Layout>
       </Layout>
 
-      {/* Bottom Navigation chỉ hiện trên mobile */}
-      <div className="lg:hidden">
+      {/* Bottom Navigation: Mobile */}
+      <div className="md:hidden">
         <BottomNavigation />
       </div>
     </>

@@ -12,17 +12,13 @@ const Sidebar = () => {
   return (
     <Sider
       width={250}
-      breakpoint="lg"
-      collapsedWidth="0"
       className="min-h-screen shadow-md"
       style={{
         background: "#001529",
-        paddingTop: "12px",
-
+        paddingTop: 12,
       }}
     >
-      {/* Logo */}
-      <div className="h-18 flex items-center justify-center border-b border-slate-700">
+      <div className="h-[72px] flex items-center justify-center border-b border-slate-700">
         <div className="text-center">
           <h2 className="text-white text-xl font-bold">
             Feedback
