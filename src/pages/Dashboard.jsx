@@ -245,10 +245,10 @@ const Dashboard = () => {
   return (
     <>
       <Layout className="min-h-screen">
-        {/* Sidebar: Tablet + Desktop */}
+        {/* Sidebar: Tablet + Desktop
         <div className="hidden md:block">
           <Sidebar />
-        </div>
+        </div> */}
 
         <Layout className="min-w-0">
           <Navbar />

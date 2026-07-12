@@ -3,7 +3,7 @@ import { SmileOutlined, CoffeeOutlined, HeartFilled } from "@ant-design/icons";
 import BottomNavigation from "./BottomNavigation";
 import { useNavigate } from "react-router-dom";
 
-const Commission = () => {
+const Troll = () => {
   const navigate = useNavigate();
   const handleDonate = () => {
     sessionStorage.setItem("vipFeedback", "true");
@@ -74,4 +74,4 @@ const Commission = () => {
   );
 };
 
-export default Commission;
+export default Troll;

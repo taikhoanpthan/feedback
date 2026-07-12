@@ -1,7 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard";
-import Commission from "../components/customs/troll";
+import Troll from "../components/customs/troll";
+import Commission from "../pages/Commission";
+import TestUpload from "../pages/TestUpload";
 
 const AppRoutes = () => {
   return (
@@ -12,7 +14,10 @@ const AppRoutes = () => {
 
         {/* Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="/troll" element={<Commission />} />
+        <Route path="/troll" element={<Troll />} />
+        <Route path="/commission" element={<Commission />} />
+
+        <Route path="/test-upload" element={<TestUpload />} />
       </Routes>
     </BrowserRouter>
   );
