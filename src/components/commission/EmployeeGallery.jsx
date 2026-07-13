@@ -1,3 +1,6 @@
+import { useMemo, useState } from "react";
+import dayjs from "dayjs";
+
 import {
   Row,
   Col,
@@ -9,6 +12,8 @@ import {
   Tooltip,
   Popconfirm,
   Card,
+  DatePicker,
+  Space,
 } from "antd";
 
 import {
@@ -17,6 +22,8 @@ import {
   DownloadOutlined,
   DeleteOutlined,
   PictureOutlined,
+  FolderOpenFilled,
+  CalendarOutlined,
 } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -24,97 +31,136 @@ const { Title, Text } = Typography;
 const EmployeeGallery = ({
   folder,
   images = [],
-  loading,
+  loading = false,
   onBack,
   onUpload,
   onDelete,
 }) => {
+  // Mặc định là tháng hiện tại
+  const [selectedMonth, setSelectedMonth] = useState(dayjs());
+
+  // Lọc theo tháng + năm
+  const filteredImages = useMemo(() => {
+    return images.filter((item) =>
+      dayjs(item.createdAt).isSame(selectedMonth, "month"),
+    );
+  }, [images, selectedMonth]);
+
   const handleDownload = (url) => {
     const link = document.createElement("a");
-
     link.href = url;
-
     link.target = "_blank";
-
     link.download = "";
-
     link.click();
   };
 
   return (
     <div>
-      {/* Header */}
+      {/* ================= Header ================= */}
 
       <Card
         bordered={false}
-        className="rounded-[28px] shadow-sm mb-8"
+        className="mb-8 rounded-[28px] shadow-sm"
+        styles={{
+          body: {
+            padding: 24,
+          },
+        }}
       >
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-5">
-
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          {/* Left */}
           <div className="flex items-center gap-4">
-
             <Button
               shape="circle"
               icon={<ArrowLeftOutlined />}
               onClick={onBack}
             />
 
-            <div>
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300 to-orange-500 shadow-lg">
+              <FolderOpenFilled
+                style={{
+                  color: "#fff",
+                  fontSize: 28,
+                }}
+              />
+            </div>
 
-              <Title
-                level={2}
-                className="!mb-0"
-              >
-                📁 {folder}
+            <div>
+              <Title level={3} className="!mb-1">
+                {folder}
               </Title>
 
               <Text type="secondary">
-                {images.length} hình ảnh
+                {filteredImages.length} ảnh • {selectedMonth.format("MM/YYYY")}
               </Text>
-
             </div>
-
           </div>
 
-          <Button
-            size="large"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={onUpload}
-          >
-            Upload ảnh
-          </Button>
+          {/* Right */}
+          <Space wrap>
+            <DatePicker
+              picker="month"
+              allowClear={false}
+              value={selectedMonth}
+              onChange={(value) => value && setSelectedMonth(value)}
+              suffixIcon={<CalendarOutlined />}
+            />
 
+            <Button
+              size="large"
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={onUpload}
+            >
+              Upload ảnh
+            </Button>
+          </Space>
         </div>
       </Card>
 
-      {loading ? (
-        <div className="py-24 flex justify-center">
+      {/* ================= Loading ================= */}
+
+      {loading && (
+        <div className="flex justify-center py-24">
           <Spin size="large" />
         </div>
-      ) : images.length === 0 ? (
-        <Card
-          className="rounded-[28px]"
-        >
+      )}
+
+      {/* ================= Empty ================= */}
+
+      {!loading && filteredImages.length === 0 && (
+        <Card bordered={false} className="rounded-[28px]">
           <Empty
-            image={<PictureOutlined style={{ fontSize: 60 }} />}
-            description="Chưa có ảnh nào"
-          />
+            image={<PictureOutlined style={{ fontSize: 64 }} />}
+            description={
+              <>
+                <div className="text-base font-medium">
+                  Không có ảnh trong {selectedMonth.format("MM/YYYY")}
+                </div>
+
+                <div className="mt-2 text-gray-500">
+                  Hãy chọn tháng khác hoặc upload thêm ảnh.
+                </div>
+              </>
+            }
+          >
+            <Button type="primary" icon={<PlusOutlined />} onClick={onUpload}>
+              Upload ảnh
+            </Button>
+          </Empty>
         </Card>
-      ) : (
+      )}
+
+      {/* ================= Gallery ================= */}
+
+      {!loading && filteredImages.length > 0 && (
         <Row gutter={[24, 24]}>
-          {images.map((item) => (
-            <Col
-              key={item.id}
-              xs={12}
-              sm={12}
-              md={8}
-              lg={6}
-              xl={6}
-            >
+          {" "}
+          {filteredImages.map((item) => (
+            <Col key={item.id} xs={12} sm={12} md={8} lg={6} xl={6}>
               <Card
                 hoverable
-                className="rounded-[24px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                className="overflow-hidden rounded-[24px] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 styles={{
                   body: {
                     padding: 14,
@@ -131,48 +177,32 @@ const EmployeeGallery = ({
                   />
                 }
               >
-                <Text
-                  type="secondary"
-                  className="block mb-4"
-                >
-                  {new Date(
-                    item.createdAt
-                  ).toLocaleString("vi-VN")}
+                <Text type="secondary" className="mb-4 block">
+                  {dayjs(item.createdAt).format("DD/MM/YYYY HH:mm")}
                 </Text>
 
                 <div className="flex justify-between">
-
-                  <Tooltip title="Download">
-
+                  <Tooltip title="Tải xuống">
                     <Button
                       shape="circle"
                       icon={<DownloadOutlined />}
-                      onClick={() =>
-                        handleDownload(item.image)
-                      }
+                      onClick={() => handleDownload(item.image)}
                     />
-
                   </Tooltip>
 
                   <Popconfirm
                     title="Xóa ảnh?"
+                    description="Ảnh này sẽ bị xóa vĩnh viễn."
                     okText="Xóa"
                     cancelText="Hủy"
-                    onConfirm={() =>
-                      onDelete(item.id)
-                    }
+                    okButtonProps={{
+                      danger: true,
+                    }}
+                    onConfirm={() => onDelete(item.id)}
                   >
-
-                    <Button
-                      danger
-                      shape="circle"
-                      icon={<DeleteOutlined />}
-                    />
-
+                    <Button danger shape="circle" icon={<DeleteOutlined />} />
                   </Popconfirm>
-
                 </div>
-
               </Card>
             </Col>
           ))}

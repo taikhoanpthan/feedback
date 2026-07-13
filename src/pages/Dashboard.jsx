@@ -293,7 +293,7 @@ const Dashboard = () => {
       </Layout>
 
       {/* Bottom Navigation: Mobile */}
-      <div className="md:hidden">
+      <div>
         <BottomNavigation />
       </div>
     </>

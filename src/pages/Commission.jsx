@@ -148,7 +148,7 @@ const Commission = () => {
                 {/* Header */}
 
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                  <div>
+                  {/* <div>
                     <Title level={2} className="!mb-1">
                       Commission Gallery
                     </Title>
@@ -156,16 +156,16 @@ const Commission = () => {
                     <Text type="secondary">
                       Quản lý hình ảnh đánh giá của nhân viên
                     </Text>
-                  </div>
+                  </div> */}
 
-                  <Button
+                  {/* <Button
                     type="primary"
                     size="large"
                     icon={<PlusOutlined />}
                     onClick={() => setOpenSectionModal(true)}
                   >
                     Thêm nhân viên
-                  </Button>
+                  </Button> */}
                 </div>
 
                 {/* Search */}
@@ -263,7 +263,7 @@ const Commission = () => {
       </Layout>
 
       {/* Bottom Navigation */}
-      <div className="md:hidden">
+      <div>
         <BottomNavigation />
       </div>
     </>

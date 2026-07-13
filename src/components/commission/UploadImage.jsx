@@ -104,14 +104,14 @@ const UploadImage = ({
         </Space>
       }
     >
-      <Input
+      {/* <Input
         placeholder="Tên ảnh (không bắt buộc)"
         value={imageName}
         onChange={(e) => setImageName(e.target.value)}
         style={{
           marginBottom: 20,
         }}
-      />
+      /> */}
 
       <Dragger {...uploadProps}>
         <p className="ant-upload-drag-icon">

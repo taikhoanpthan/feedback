@@ -35,7 +35,20 @@ export default function BottomNavigation() {
   const location = useLocation();
 
   return (
-    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 lg:hidden w-[94%] max-w-md">
+    <div
+      className="
+    fixed
+    bottom-6
+    left-1/2
+    -translate-x-1/2
+    z-50
+    w-[92%]
+    sm:max-w-md
+    md:max-w-lg
+    lg:max-w-xl
+    xl:max-w-2xl
+  "
+    >
       <div
         className="
           relative
@@ -101,20 +114,12 @@ export default function BottomNavigation() {
                   gap-1
                   px-4
                   py-2
-                  ${
-                    active
-                      ? "text-blue-600"
-                      : "text-slate-500"
-                  }
+                  ${active ? "text-blue-600" : "text-slate-500"}
                 `}
               >
-                <span className="text-[22px]">
-                  {item.icon}
-                </span>
+                <span className="text-[22px]">{item.icon}</span>
 
-                <span className="text-[11px] font-medium">
-                  {item.label}
-                </span>
+                <span className="text-[11px] font-medium">{item.label}</span>
               </motion.div>
             </button>
           );
