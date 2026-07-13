@@ -21,7 +21,7 @@ const EmployeeCard = ({ name, count = 0, onClick }) => {
             {name}
           </Title>
 
-          <Text type="secondary">Ảnh google</Text>
+          {/* <Text type="secondary">Ảnh google</Text> */}
         </div>
 
         <Tag color="blue" className="!rounded-full !px-3">

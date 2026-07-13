@@ -37,30 +37,31 @@ export default function BottomNavigation() {
   return (
     <div
       className="
-    fixed
-    bottom-6
-    left-1/2
-    -translate-x-1/2
-    z-50
-    w-[92%]
-    sm:max-w-md
-    md:max-w-lg
-    lg:max-w-xl
-    xl:max-w-2xl
-  "
+        fixed
+        bottom-6
+        left-1/2
+        -translate-x-1/2
+        z-50
+        w-[92%]
+        sm:max-w-md
+        md:max-w-lg
+        lg:max-w-xl
+        xl:max-w-2xl
+      "
     >
       <div
         className="
           relative
           flex
-          justify-around
           items-center
+          justify-around
           rounded-full
-          border border-white/40
+          border
+          border-white/40
           bg-white/55
           backdrop-blur-3xl
           shadow-[0_20px_60px_rgba(0,0,0,.15)]
-          p-2
+          p-1.5
           overflow-hidden
         "
       >
@@ -71,7 +72,7 @@ export default function BottomNavigation() {
             <button
               key={item.key}
               onClick={() => navigate(item.key)}
-              className="relative flex-1 flex justify-center py-1"
+              className="relative flex flex-1 justify-center py-0.5"
             >
               {active && (
                 <motion.div
@@ -93,12 +94,10 @@ export default function BottomNavigation() {
               )}
 
               <motion.div
-                whileTap={{
-                  scale: 0.9,
-                }}
+                whileTap={{ scale: 0.92 }}
                 animate={{
-                  y: active ? -2 : 0,
-                  scale: active ? 1.08 : 1,
+                  y: active ? -1 : 0,
+                  scale: active ? 1.05 : 1,
                 }}
                 transition={{
                   type: "spring",
@@ -111,15 +110,23 @@ export default function BottomNavigation() {
                   flex
                   flex-col
                   items-center
-                  gap-1
+                  gap-0.5
                   px-4
-                  py-2
-                  ${active ? "text-blue-600" : "text-slate-500"}
+                  py-1
+                  ${
+                    active
+                      ? "text-blue-600"
+                      : "text-slate-500 hover:text-slate-700"
+                  }
                 `}
               >
-                <span className="text-[22px]">{item.icon}</span>
+                <span className="text-[20px] leading-none">
+                  {item.icon}
+                </span>
 
-                <span className="text-[11px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium leading-none">
+                  {item.label}
+                </span>
               </motion.div>
             </button>
           );
