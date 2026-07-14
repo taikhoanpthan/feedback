@@ -5,7 +5,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const menus = [
   {
@@ -24,10 +24,9 @@ const menus = [
     label: "Donate",
   },
   {
-    key: "https://todo-yakiuo.vercel.app/",
+    key: "/settings",
     icon: <SettingOutlined />,
     label: "Settings",
-    external: true,
   },
 ];
 
@@ -72,13 +71,7 @@ export default function BottomNavigation() {
           return (
             <button
               key={item.key}
-              onClick={() => {
-                if (item.key.startsWith("http")) {
-                  window.open(item.key, "_blank");
-                } else {
-                  navigate(item.key);
-                }
-              }}
+              onClick={() => navigate(item.key)}
               className="relative flex flex-1 justify-center py-0.5"
             >
               {active && (
@@ -127,7 +120,9 @@ export default function BottomNavigation() {
                   }
                 `}
               >
-                <span className="text-[20px] leading-none">{item.icon}</span>
+                <span className="text-[20px] leading-none">
+                  {item.icon}
+                </span>
 
                 <span className="text-[10px] font-medium leading-none">
                   {item.label}
