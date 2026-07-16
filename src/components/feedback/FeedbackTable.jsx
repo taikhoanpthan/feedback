@@ -155,6 +155,8 @@ const FeedbackTable = ({
         pagination={{
           pageSize: 8,
           showSizeChanger: false,
+          showLessItems: true,
+          responsive: true,
           showTotal: (total) => `Tổng ${total} feedback`,
         }}
       />
