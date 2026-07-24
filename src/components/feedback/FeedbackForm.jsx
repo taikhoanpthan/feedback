@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, DatePicker, Divider, Form, Input, Space, Tag } from "antd";
+import {
+  Button,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Space,
+  Tag,
+  AutoComplete,
+} from "antd";
 import dayjs from "dayjs";
 import feedbackTags from "../../assets/feedbackTags";
 
@@ -14,7 +23,17 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
   const isEdit = !!initialValues;
 
   const visibleTags = showAllTags ? feedbackTags : feedbackTags.slice(0, 6);
+  const [mealOptions, setMealOptions] = useState([]);
 
+  const mealData = [
+    "Alacarte",
+    "Abalon",
+    "Saigon",
+    "San",
+    "Saikyo",
+    "Umami",
+    "Yakiuo",
+  ];
   useEffect(() => {
     if (isEdit) {
       form.setFieldsValue({
@@ -57,7 +76,22 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
       feedback: current ? `${current}, ${tag}` : tag,
     });
   };
+  const handleMealSearch = (value) => {
+    if (!value) {
+      setMealOptions([]);
+      return;
+    }
 
+    const keyword = value.toLowerCase();
+
+    const result = mealData
+      .filter((item) => item.toLowerCase().startsWith(keyword))
+      .map((item) => ({
+        value: item,
+      }));
+
+    setMealOptions(result);
+  };
   const handleFinish = async (values) => {
     const submitData = {
       ...values,
@@ -155,10 +189,14 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
           },
         ]}
       >
-        <Input
-          autoFocus={false}
+        <AutoComplete
+          options={mealOptions}
+          onSearch={handleMealSearch}
           placeholder="Ví dụ: Buffet Standard, Alacarte..."
-        />
+          filterOption={false}
+        >
+          <Input autoFocus={false} />
+        </AutoComplete>
       </Form.Item>
 
       {isVip && (
