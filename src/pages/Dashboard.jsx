@@ -3,7 +3,7 @@ import { Layout, message } from "antd";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
-
+import historyFeedbacks from "../data/feedback-history.json";
 import Navbar from "../components/layout/Navbar";
 import Sidebar from "../components/layout/Sidebar";
 import BottomNavigation from "../components/customs/BottomNavigation";
@@ -37,11 +37,26 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      const data = await getAllFeedback();
+      const apiData = await getAllFeedback();
 
-      data.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+      // Đánh dấu dữ liệu cũ
+      const historyData = historyFeedbacks.map((item) => ({
+        ...item,
+        id: `history-${item.id}`, // tránh trùng id
+        source: "history",
+      }));
 
-      setFeedbacks(data);
+      // Đánh dấu dữ liệu mới
+      const currentData = apiData.map((item) => ({
+        ...item,
+        source: "mockapi",
+      }));
+
+      const merged = [...historyData, ...currentData];
+
+      merged.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+      setFeedbacks(merged);
     } catch (error) {
       console.error(error);
       message.error("Không thể tải dữ liệu!");
@@ -65,16 +80,24 @@ const Dashboard = () => {
   };
 
   const handleEdit = (record) => {
+    if (record.source === "history") {
+      message.warning("Feedback cũ không thể chỉnh sửa.");
+      return;
+    }
+
     setEditingFeedback(record);
     setOpenModal(true);
   };
-
   const handleDelete = async (id) => {
+    if (String(id).startsWith("history-")) {
+      message.warning("Feedback cũ chỉ để xem.");
+      return;
+    }
+
     try {
       await deleteFeedback(id);
 
       message.success("Xóa thành công!");
-
       fetchFeedbacks();
     } catch (error) {
       console.error(error);
