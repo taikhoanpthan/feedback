@@ -3,15 +3,10 @@ import {
   Modal,
   Upload,
   Button,
-  Input,
   message,
   Space,
 } from "antd";
-
-import {
-  UploadOutlined,
-  InboxOutlined,
-} from "@ant-design/icons";
+import { InboxOutlined } from "@ant-design/icons";
 
 import { uploadImage } from "../services/cloudinaryService";
 import { createImage } from "../services/imageService";
@@ -24,27 +19,35 @@ const UploadImage = ({
   folder,
   onSuccess,
 }) => {
-  const [file, setFile] = useState(null);
-  const [imageName, setImageName] = useState("");
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const resetForm = () => {
+    setFiles([]);
+  };
+
   const uploadProps = {
-    multiple: false,
-    maxCount: 1,
+    multiple: true,
+    maxCount: 20, // Có thể đổi hoặc bỏ nếu muốn không giới hạn
     showUploadList: true,
 
-    beforeUpload: (file) => {
-      setFile(file);
-      return false;
+    beforeUpload: () => false,
+
+    onChange: ({ fileList }) => {
+      setFiles(fileList);
     },
 
-    onRemove: () => {
-      setFile(null);
+    onRemove: (file) => {
+      setFiles((prev) =>
+        prev.filter((item) => item.uid !== file.uid)
+      );
     },
+
+    fileList: files,
   };
 
   const handleUpload = async () => {
-    if (!file) {
+    if (!files.length) {
       message.warning("Vui lòng chọn ảnh.");
       return;
     }
@@ -52,22 +55,28 @@ const UploadImage = ({
     try {
       setLoading(true);
 
-      // Upload lên Cloudinary
-      const cloud = await uploadImage(file, folder);
+      await Promise.all(
+        files.map(async ({ originFileObj }) => {
+          const cloud = await uploadImage(
+            originFileObj,
+            folder
+          );
 
-      // Lưu MockAPI
-      await createImage({
-        folder,
-        name: imageName || file.name,
-        image: cloud.secure_url,
-        publicId: cloud.public_id,
-        createdAt: new Date().toISOString(),
-      });
+          return createImage({
+            folder,
+            name: originFileObj.name,
+            image: cloud.secure_url,
+            publicId: cloud.public_id,
+            createdAt: new Date().toISOString(),
+          });
+        })
+      );
 
-      message.success("Upload thành công!");
+      message.success(
+        `Upload thành công ${files.length} ảnh!`
+      );
 
-      setFile(null);
-      setImageName("");
+      resetForm();
 
       onSuccess?.();
       onClose();
@@ -84,13 +93,18 @@ const UploadImage = ({
       open={open}
       title={`Upload ảnh - ${folder}`}
       onCancel={() => {
-        setFile(null);
-        setImageName("");
+        resetForm();
         onClose();
       }}
+      destroyOnClose
       footer={
         <Space>
-          <Button onClick={onClose}>
+          <Button
+            onClick={() => {
+              resetForm();
+              onClose();
+            }}
+          >
             Hủy
           </Button>
 
@@ -99,20 +113,11 @@ const UploadImage = ({
             loading={loading}
             onClick={handleUpload}
           >
-            Upload
+            Upload {files.length > 0 && `(${files.length})`}
           </Button>
         </Space>
       }
     >
-      {/* <Input
-        placeholder="Tên ảnh (không bắt buộc)"
-        value={imageName}
-        onChange={(e) => setImageName(e.target.value)}
-        style={{
-          marginBottom: 20,
-        }}
-      /> */}
-
       <Dragger {...uploadProps}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined
@@ -124,11 +129,11 @@ const UploadImage = ({
         </p>
 
         <p className="ant-upload-text">
-          Kéo thả ảnh vào đây
+          Kéo thả nhiều ảnh vào đây
         </p>
 
         <p className="ant-upload-hint">
-          hoặc nhấn để chọn ảnh
+          Hoặc nhấn để chọn nhiều ảnh cùng lúc
         </p>
       </Dragger>
     </Modal>
