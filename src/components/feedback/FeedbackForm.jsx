@@ -99,11 +99,25 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
     };
 
     // Chỉ khi tạo mới mới gán ngày feedback
-    if (!isEdit) {
-      submitData.dateTime = values.dateTime
-        ? values.dateTime.toISOString()
-        : new Date().toISOString();
-    }
+    const handleFinish = async (values) => {
+      const submitData = {
+        ...values,
+        customerPhone: values.customerPhone?.trim() || "",
+        dateTime: values.dateTime
+          ? values.dateTime.toISOString()
+          : new Date().toISOString(),
+      };
+
+      await onFinish(submitData);
+
+      sessionStorage.removeItem("vipFeedback");
+      setIsVip(false);
+
+      if (!isEdit) {
+        form.resetFields();
+        setShowAllTags(false);
+      }
+    };
 
     await onFinish(submitData);
 
@@ -199,22 +213,18 @@ const FeedbackForm = ({ onFinish, initialValues = null, loading = false }) => {
         </AutoComplete>
       </Form.Item>
 
-      {isVip && (
-        <Form.Item
-          label="📅 Ngày Feedback (VIP)"
-          name="dateTime"
-          extra="Nếu không chọn sẽ dùng ngày hiện tại."
-        >
-          <DatePicker
-            className="w-full"
-            format="DD/MM/YYYY"
-            placeholder="Chọn ngày"
-            disabledDate={(current) =>
-              current && current > dayjs().endOf("day")
-            }
-          />
-        </Form.Item>
-      )}
+      <Form.Item
+        label="📅 Ngày Feedback"
+        name="dateTime"
+        extra="Nếu không chọn sẽ dùng ngày hiện tại."
+      >
+        <DatePicker
+          className="w-full"
+          format="DD/MM/YYYY"
+          placeholder="Chọn ngày"
+          disabledDate={(current) => current && current > dayjs().endOf("day")}
+        />
+      </Form.Item>
 
       {isVip && (
         <div className="mb-5 rounded-xl border border-yellow-200 bg-yellow-50 p-4">

@@ -18,9 +18,7 @@ const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
 
           // Nếu VIP chọn ngày mới thì dùng ngày đó,
           // nếu không thì giữ nguyên ngày cũ.
-          dateTime: values.dateTime
-            ? values.dateTime.toISOString()
-            : editingFeedback.dateTime,
+          dateTime: values.dateTime || editingFeedback.dateTime,
 
           updatedAt: new Date().toISOString(),
         });
@@ -28,12 +26,6 @@ const FeedbackModal = ({ open, onClose, onSuccess, editingFeedback }) => {
       } else {
         await createFeedback({
           ...values,
-
-          // Ngày tạo
-          dateTime:
-            values.dateTime?.toISOString?.() || new Date().toISOString(),
-
-          // Chưa cập nhật lần nào
           updatedAt: null,
         });
 
